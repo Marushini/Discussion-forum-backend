@@ -16,6 +16,16 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/', async (req, res) => {
+    try {
+      const posts = await Post.find();
+      res.json(posts);
+    } catch (err) {
+      res.status(500).send('Server Error');
+    }
+  });
+  
+
 // Like a post
 router.post('/:id/like', authMiddleware, async (req, res) => {
   try {
