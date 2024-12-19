@@ -5,10 +5,14 @@ const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Add a reply to a post
-router.post('/:postId', authMiddleware, async (req, res) => {
+router.post('/:postId/replies', authMiddleware, async (req, res) => {
   try {
     const { content } = req.body;
-    const reply = new Reply({ content, postId: req.params.postId, createdBy: req.user.id });
+    const reply = new Reply({
+      content,
+      postId: req.params.postId,
+      createdBy: req.user.id,
+    });
     await reply.save();
     res.status(201).json(reply);
   } catch (err) {
@@ -17,9 +21,12 @@ router.post('/:postId', authMiddleware, async (req, res) => {
 });
 
 // Like a reply
-router.post('/:id/like', authMiddleware, async (req, res) => {
+router.post('/:postId/replies/:replyId/like', authMiddleware, async (req, res) => {
   try {
-    const reply = await Reply.findById(req.params.id);
+    const reply = await Reply.findById(req.params.replyId);
+    if (!reply) {
+      return res.status(404).send('Reply not found');
+    }
     reply.likes += 1;
     await reply.save();
     res.json(reply);
@@ -29,9 +36,12 @@ router.post('/:id/like', authMiddleware, async (req, res) => {
 });
 
 // Dislike a reply
-router.post('/:id/dislike', authMiddleware, async (req, res) => {
+router.post('/:postId/replies/:replyId/dislike', authMiddleware, async (req, res) => {
   try {
-    const reply = await Reply.findById(req.params.id);
+    const reply = await Reply.findById(req.params.replyId);
+    if (!reply) {
+      return res.status(404).send('Reply not found');
+    }
     reply.dislikes += 1;
     await reply.save();
     res.json(reply);
