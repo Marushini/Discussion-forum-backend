@@ -1,5 +1,6 @@
 const express = require('express');
 const Post = require('../models/Post');
+const Reply = require('../models/Reply');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -16,10 +17,18 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Get all posts
+// Get all posts with replies
 router.get('/', async (req, res) => {
   try {
-    const posts = await Post.find().populate('createdBy', 'username');
+    const posts = await Post.find()
+      .populate('createdBy', 'username')
+      .lean(); // Converts to a plain JavaScript object
+
+    for (let post of posts) {
+      const replies = await Reply.find({ postId: post._id }).populate('createdBy', 'username');
+      post.replies = replies;
+    }
+
     res.json(posts);
   } catch (err) {
     res.status(500).json({ message: 'Server Error' });
