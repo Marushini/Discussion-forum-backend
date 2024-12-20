@@ -26,7 +26,7 @@ const repliesRoute = require('./routes/replies');
 // Define Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes); 
-app.use('/api', repliesRoute); 
+app.use('/api/posts', repliesRoute); 
 
 // Root Route (Fix for 404 Error)
 app.get('/', (req, res) => {
