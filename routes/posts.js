@@ -12,41 +12,17 @@ router.post('/', authMiddleware, async (req, res) => {
     await post.save();
     res.status(201).json(post);
   } catch (err) {
-    res.status(400).send(err.message);
+    res.status(400).json({ message: err.message });
   }
 });
 
+// Get all posts
 router.get('/', async (req, res) => {
-    try {
-      const posts = await Post.find();
-      res.json(posts);
-    } catch (err) {
-      res.status(500).send('Server Error');
-    }
-  });
-  
-
-// Like a post
-router.post('/:id/like', authMiddleware, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
-    post.likes += 1;
-    await post.save();
-    res.json(post);
+    const posts = await Post.find().populate('createdBy', 'username');
+    res.json(posts);
   } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
-// Dislike a post
-router.post('/:id/dislike', authMiddleware, async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    post.dislikes += 1;
-    await post.save();
-    res.json(post);
-  } catch (err) {
-    res.status(500).send(err.message);
+    res.status(500).json({ message: 'Server Error' });
   }
 });
 
