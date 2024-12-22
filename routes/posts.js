@@ -66,4 +66,37 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Edit a post - Ensure only the creator can edit
+router.put('/:postId', authMiddleware, async (req, res) => {
+  const { postId } = req.params;
+  const { title, content } = req.body;
+
+  // Validate input
+  if (!title || !content) {
+    return res.status(400).json({ message: 'Title and content are required.' });
+  }
+
+  try {
+    // Find the post by ID
+    const post = await Post.findById(postId);
+
+    // Check if the logged-in user is the one who created the post
+    if (post.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You are not authorized to edit this post.' });
+    }
+
+    // Update the post
+    post.title = title;
+    post.content = content;
+
+    // Save the updated post
+    await post.save();
+
+    res.status(200).json(post);
+  } catch (err) {
+    console.error('Error editing post:', err);
+    res.status(500).json({ message: 'Failed to edit post.' });
+  }
+});
+
 module.exports = router;
