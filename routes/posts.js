@@ -99,31 +99,4 @@ router.put('/:postId', authMiddleware, async (req, res) => {
   }
 });
 
-// Delete a post - Ensure only the creator can delete
-router.delete('/:postId', authMiddleware, async (req, res) => {
-  const { postId } = req.params;
-
-  try {
-    // Find the post by ID
-    const post = await Post.findById(postId);
-
-    // Check if the logged-in user is the one who created the post
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found.' });
-    }
-    if (post.createdBy.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'You are not authorized to delete this post.' });
-    }
-
-    // Delete the post and its associated replies
-    await Reply.deleteMany({ postId });
-    await post.remove();
-
-    res.status(200).json({ message: 'Post deleted successfully.' });
-  } catch (err) {
-    console.error('Error deleting post:', err);
-    res.status(500).json({ message: 'Failed to delete post.' });
-  }
-});
-
 module.exports = router;
