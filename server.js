@@ -18,15 +18,14 @@ app.use(express.json());
 connectDB();
 
 // Import Routes
-
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const repliesRoute = require('./routes/replies');
 
 // Define Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/posts', postRoutes); 
-app.use('/api/posts', repliesRoute); 
+app.use('/api/posts', postRoutes); // Handles post-related routes
+app.use('/api/replies', repliesRoute); // Separate route for replies
 
 // Root Route (Fix for 404 Error)
 app.get('/', (req, res) => {
