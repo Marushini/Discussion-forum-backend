@@ -95,8 +95,9 @@ router.put('/:postId', authMiddleware, async (req, res) => {
     res.status(200).json(post);
   } catch (err) {
     console.error('Error editing post:', err);
-    res.status(500).json({ message: 'Failed to edit post.' });
+    res.status(500).json({ message: 'Failed to  edit post.' });
   }
+
 });
 
 module.exports = router;
